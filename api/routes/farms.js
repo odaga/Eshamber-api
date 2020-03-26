@@ -3,15 +3,38 @@ const router = express.Router();
 const mysql = require('mysql');
 require('dotenv').config();
 
+// Turn on JSON body parsing for REST services
+router.use(express.json())
+// Turn on URL-encoded body parsing for REST services
+router.use(express.urlencoded({ extended: true }));
+
 
 //Creating connection to the mysql database 
 
 const connection  = mysql.createConnection({
-    host: process.env.BD_HOST_URL,
-    user: process.env.DB_USER_NAME,
+    host: process.env.BD_HOST,
+    user: process.env.DB_USER,
     password: process.env.DB_USER_PASSWORD,
-    database: process.env.BD_NAME
+    database: process.env.DB_NAME
 });
+
+
+//=============== Second option for connecting database by creating a connection pool ======================//
+/*
+const pool = mysql.createPool({
+    host: process.env.BD_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_USER_PASSWORD,
+    database: process.env.DB_NAME
+   
+});
+
+function getConnection(){
+  return pool
+}
+*/
+
+
 connection.connect(err => {
     if(err) {
         console.log('error connecting to database:' +err.stack);
@@ -23,7 +46,9 @@ connection.connect(err => {
 
 //Definition for the routes and callback functions
 router.get('/', (req, res, next) => {
-    connection.query('SELECT * FROM Farms', (err, rows, fields) => {
+
+    const queryCommand = 'SELECT * FROM Farms'
+    connection.query(queryCommand, (err, rows, fields) => {
         if(!err) {
             console.log(rows);
             res.status(200).send(rows);
@@ -39,11 +64,16 @@ router.get('/', (req, res, next) => {
 
 //Route to fetch a specific farm based on its id
 router.get('/:farmId', (req, res, next) => {
-    connection.query('SELECT * FROM Farms WHERE farmId = ?',[req.params.farmId], (err, rows, fields) => {
+    
+    //SQL command
+    const queryCommand = 'SELECT * FROM Farms WHERE farmId = ?'
+    connection.query(queryCommand,[req.params.farmId], (err, rows, fields) => {
          if(!err) {
              res.status(200).send(rows);
              if(rows.empty) {
-
+                res.status(404).send({
+                    message: "Farm not found"
+                });
              }
          }
          else {
@@ -79,7 +109,9 @@ router.post('/', (req, res, next) => {
 
 //Route to DELETE a specific farm based on its id
 router.delete('/:farmId', (req, res, next) => {
-    connection.query('DELETE FROM Farms WHERE farmId = ?',[req.params.farmId], (err, rows, fields) => {
+
+    const queryCommand = 'DELETE FROM Farms WHERE farmId = ?'
+    connection.query(queryCommand,[req.params.farmId], (err, rows, fields) => {
          if(!err) {
              res.send('Farm has deleted successfully.');
          }
@@ -90,5 +122,8 @@ router.delete('/:farmId', (req, res, next) => {
     });
  
  });
+
+
+
 
 module.exports = router;
