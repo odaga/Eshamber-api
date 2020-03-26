@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const router = express.Router();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const mysql = require('mysql');
@@ -54,6 +55,11 @@ app.use((error, req, res, next) => {
     });
 });
 
+
+//Definition for the routes and callback functions
+router.get('/', (req, res, next) => {
+   res.status(200).send("Eshamber RESTful API")
+});
 
 
 module.exports = app;
