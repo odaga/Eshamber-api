@@ -4,20 +4,22 @@
   "description": "A node.js RESTful APT project for Eshamber",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
   },
   "author": "Joshua Odaga",
   "license": "ISC",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
     "body-parser": "^1.19.0",
-    "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "joi": "^14.3.1",
     "json-api-serializer": "^2.3.0",
     "morgan": "^1.9.1",
     "mysql": "^2.18.1"
   },
   "devDependencies": {
+    "dotenv": "^8.2.0",
     "nodemon": "^2.0.2"
   }
 }
