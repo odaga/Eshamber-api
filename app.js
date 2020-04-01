@@ -3,7 +3,7 @@ const app = express();
 const router = express.Router();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const mysql = require('mysql');
+const mysql = require('mysql2');
 
 
 
