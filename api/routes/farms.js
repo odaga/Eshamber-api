@@ -13,7 +13,7 @@ router.use(express.urlencoded({ extended: true }));
 
 const connection  = mysql.createConnection({
     host: process.env.BD_HOST,
-    user: process.env.DB_USER,
+    user: process.env.DB_USER_NAME,
     password: process.env.DB_USER_PASSWORD,
     database: process.env.DB_NAME
 });

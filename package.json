@@ -16,7 +16,8 @@
     "joi": "^14.3.1",
     "json-api-serializer": "^2.3.0",
     "morgan": "^1.9.1",
-    "mysql": "^2.18.1"
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.5"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
