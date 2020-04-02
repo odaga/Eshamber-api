@@ -2,37 +2,21 @@ const express = require('express');
 const router = express.Router();
 const mysql = require('mysql2');
 require('dotenv').config();
+const Farm = require('../models/Farms');
+require('../../config/database');
 
 // Turn on JSON body parsing for REST services
 router.use(express.json())
 // Turn on URL-encoded body parsing for REST services
 router.use(express.urlencoded({ extended: true }));
 
-
 //Creating connection to the mysql database 
-
 const connection  = mysql.createConnection({
     host: process.env.BD_HOST,
     user: process.env.DB_USER_NAME,
     password: process.env.DB_USER_PASSWORD,
     database: process.env.DB_NAME
 });
-
-
-//=============== Second option for connecting database by creating a connection pool ======================//
-/*
-const pool = mysql.createPool({
-    host: process.env.BD_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_USER_PASSWORD,
-    database: process.env.DB_NAME
-   
-});
-
-function getConnection(){
-  return pool
-}
-*/
 
 
 connection.connect(err => {
@@ -57,9 +41,7 @@ router.get('/', (req, res, next) => {
             console.log(err.message);
             throw err
         }
-
     });
-
 });
 
 //Route to fetch a specific farm based on its id
@@ -81,8 +63,6 @@ router.get('/:farmId', (req, res, next) => {
             throw err
         }
     });
-    
- 
 });
 
 
@@ -122,8 +102,5 @@ router.delete('/:farmId', (req, res, next) => {
     });
  
  });
-
-
-
 
 module.exports = router;
