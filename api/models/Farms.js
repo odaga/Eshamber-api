@@ -1,7 +1,7 @@
 const Sequelize  = require('sequelize');
-require('../../config/database')
+const db = require('../../config/database');
 
-const Farm = sequelize.define("Farm", {
+const Farm = db.define("Farm", {
 
     id: {
         type: Sequelize.INTEGER(11),
@@ -46,6 +46,15 @@ const Farm = sequelize.define("Farm", {
     Farmer: {
         type: Sequelize.STRING(300),
         allowNull: false
+    },
+
+    createdAt: {
+        field: 'created_at',
+        type: Sequelize.DATE,
+    },
+    updatedAt: {
+        field: 'updated_at',
+        type: Sequelize.DATE,
     },
 });
 

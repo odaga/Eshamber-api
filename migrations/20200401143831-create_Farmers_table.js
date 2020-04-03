@@ -55,21 +55,22 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE
+    //createdAt: Sequelize.DATE,
+    //updatedAt: Sequelize.DATE
+
+    createdAt: {
+      field: 'created_at',
+      type: Sequelize.DATE,
+  },
+  updatedAt: {
+      field: 'updated_at',
+      type: Sequelize.DATE,
+  },
 
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.dropTable('users');
-    */
-
    return queryInterface.dropTable("farmers");
   }
 };

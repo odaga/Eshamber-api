@@ -1,6 +1,7 @@
 const Sequelize  = require('sequelize');
+const db = require('../../config/database');
 
-module.exports = sequelize.define("Farmer", {
+const Farmer = db.define("Farmer", {
 
     id: {
         type: Sequelize.INTEGER(11),
@@ -45,9 +46,18 @@ module.exports = sequelize.define("Farmer", {
     Experience: {
         type: Sequelize.STRING,
         allowNull: true
-    }
+    },
 
+   
 
-    
-
+    createdAt: {
+        field: 'created_at',
+        type: Sequelize.DATE,
+    },
+    updatedAt: {
+        field: 'updated_at',
+        type: Sequelize.DATE,
+    },
 });
+
+module.exports = Farmer;

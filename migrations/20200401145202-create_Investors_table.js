@@ -37,8 +37,7 @@ module.exports = {
     PhoneNumber: {
         type: Sequelize.STRING(13),
         allowNull: true,
-        unique: true
-        
+        unique: true    
     },
 
     Email: {
@@ -65,20 +64,22 @@ module.exports = {
     FarmInvested: {
         type: Sequelize.STRING(300),
         allowNull: true
-    }
+    },
+
+    createdAt: {
+      field: 'created_at',
+      type: Sequelize.DATE,
+  },
+  updatedAt: {
+      field: 'updated_at',
+      type: Sequelize.DATE,
+  },
     
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.dropTable('users');
-    */
-
+    
     return queryInterface.dropTable('investors');
   }
 };

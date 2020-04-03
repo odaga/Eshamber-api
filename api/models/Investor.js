@@ -1,6 +1,7 @@
 const Sequelize  = require('sequelize');
+const db = require('../../config/database');
 
-module.exports = sequelize.define("Investor", {
+const Investor = db.define("Investor", {
 
     id: {
         type: Sequelize.INTEGER(11),
@@ -56,7 +57,17 @@ module.exports = sequelize.define("Investor", {
     FarmInvested: {
         type: Sequelize.STRING(300),
         allowNull: true
-    }
-    
+    },
+
+    createdAt: {
+        field: 'created_at',
+        type: Sequelize.DATE,
+    },
+    updatedAt: {
+        field: 'updated_at',
+        type: Sequelize.DATE,
+    },
 
 });
+
+module.exports = Investor;
