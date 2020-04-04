@@ -4,6 +4,11 @@ const mysql = require('mysql2');
 const Farmer = require('../models/Farmer');
 const db = require('../../config/database');
 
+// Turn on JSON body parsing for REST services
+router.use(express.json())
+// Turn on URL-encoded body parsing for REST services
+router.use(express.urlencoded({ extended: true }));
+
 
  //=========================== Routes for the Farmer =============================//
 
@@ -21,82 +26,31 @@ router.get('/', (req, res, next) =>{
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Fetch all farmers from the database
-router.get('/', (req, res, next) => {
-    connection.query('SELECT * FROM Users', (err, rows, fields) => {
-        if(!err) {
-            console.log(rows);
-            res.status(200).send(rows);
-        }
-        else {
-            console.log(err);
-        }
+//Add farmer to the database
+router.post('/', (req, res, next) =>{
+    const data = {
+        userName: req.body.userName,
+        FirstName: req.body.FirstName,
+        LastName: req.body.LastName,
+        PhoneNumber: req.body.PhoneNumber,
+        Email: req.body.Email,
+        password: req.body.password,
+        Exprience: req.body.Exprience
+    }
+    
+    Farmer.create(data)
+    .then(Farmer => {
+        //Send feedback to the client
+        console.log("Farmer created with ID: ", Farmer.id);
+        res.status(201).json({
+            id: Investor.id,
+            message: "Farmer created succesfully"
+        });
+    })
+    .catch(err => {
+        console.log(err.message);
+        res.status(400).json(err.message);
     });
 });
-
-//Fetch single farmer from the database
-router.get('/:userId', (req, res, next) => {
-
-   connection.query('SELECT * FROM Users WHERE userId = ?',[req.params.userId], (err, rows, fields) => {
-        if(!err) {
-            res.send(rows);
-        }
-   });
-
-});
-
-//Add an farmer to the database
-router.post('/', (req, res, next) => {
-    id = req.params.userId;
-
-    res.status(201).json({
-        message: 'user added to database',
-        id: id
-    });
-   
-});
-
-//Fetch a single farmer from the database
-router.delete('/:userId', (req, res, next) => {
-
-    connection.query('DELETE * FROM Users WHERE userId = ?',[req.params.userId], (err, rows, fields) => {
-        id = req.params.userId;
-         if(!err) {
-            res.status(201).json({
-                message: 'user deleted user with: ' +id,
-                id: id
-            });
-         }
-         if (err) {
-             console.log(err.message);
-         }     
-    });
- });
-
 
 module.exports = router;

@@ -4,10 +4,14 @@ const mysql = require('mysql2');
 const Investor = require('../models/Investor');
 const db = require('../../config/database');
 
+// Turn on JSON body parsing for REST services
+router.use(express.json())
+// Turn on URL-encoded body parsing for REST services
+router.use(express.urlencoded({ extended: true }));
+
 
 
 //=========================== Routes for the Investor =============================//
-
 
 //Get all Investors from the database
 router.get('/', (req, res, next) =>{
@@ -22,69 +26,46 @@ router.get('/', (req, res, next) =>{
         })
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Fetch all investors from the database
-router.get('/', (req, res, next) => {
-    connection.query('SELECT * FROM Investors', (err, rows, fields) => {
-        if(!err) {
-            console.log(rows);
-            res.status(200).send(rows);
-        }
-        else {
-            console.log(err);
-        }
-    });
-});
-
-//Fetch single investor from the database
-router.get('/:userId', (req, res, next) => {
-
-   connection.query('SELECT * FROM Investors WHERE Id = ?',[req.params.userId], (err, rows, fields) => {
-        if(!err) {
-            res.send(rows);
-        }
-   });
-
-});
-
-//Add an investor to the database
 router.post('/', (req, res, next) => {
-    id = req.params.userId;
 
-    res.status(201).json({
-        message: 'user added to database',
-        id: id
+    const data = {
+        userName: req.body.userName,
+        FirstName: req.body.FirstName,
+        LastName: req.body.LastName,
+        PhoneNumber: req.body.PhoneNumber,
+        Email: req.body.Email,
+        password: req.body.password,
+    }
+    
+    Investor.create(data)
+    .then(Investor => {
+        //Send feedback to the client
+        console.log("Investor created with ID: ", Investor.id);
+        res.status(201).json({
+            id: Investor.id,
+            message: "Investor created succesfully"
+        });
+    })
+    .catch(err => {
+        console.log(err.message);
+        res.status(400).json(err.message);
     });
-   
+    
 });
 
-//Fetch a single investor from the database
-router.delete('/:userId', (req, res, next) => {
 
-    connection.query('DELETE * FROM Investors WHERE userId = ?',[req.params.userId], (err, rows, fields) => {
-        id = req.params.userId;
-         if(!err) {
-            res.status(201).json({
-                message: 'user deleted user with: ' +id,
-                id: id
-            });
-         }
-         if (err) {
-             console.log(err.message);
-         }     
-    });
- });
+//Delete Investor from the database
+router.delete('/', (req, res, next) => {
+    Investor.destroy({
+        where: {
+            id: req.body.id
+        }
+    })
+    .then(() => {
+        //Send deletion successful message to the client
+        console.log("Investor with id: ", + req.body.id + "Deleted");
+        res.status().json()
+    })
+});
 
 module.exports = router;
