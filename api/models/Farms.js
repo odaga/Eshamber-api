@@ -17,7 +17,7 @@ const Farm = db.define("Farm", {
         allowNull: false
     },
 
-    FarmLoaction: {
+    FarmLocation: {
         type: Sequelize.STRING(300),
         allowNull: false
     },

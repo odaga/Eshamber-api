@@ -29,9 +29,9 @@ router.get('/', (req, res, next) =>{
 
 
 //Get all farms from the database
-router.get('/:id', (req, res, next) =>{
+router.get('/:FarmId', (req, res, next) =>{
     Farm.findOne({
-
+        where: {id: Farm.id}
     })
         .then( Farm => {
             console.log(Farm)
@@ -47,19 +47,21 @@ router.get('/:id', (req, res, next) =>{
 
 //Create new farm in the database
 router.post('/', (req, res, next) => {
-    Farm.create({
-        FarmName: req.params.FarmName,
-        FarmDescription: req.params.FarmDescription,
-        FarmLocation: req.params.FarmLocation,
-        FarmCrop: req.params.FarmCrop,
-        FarmROI: req.params.FarmROI,
-        Duration: req.params.Duration,
-        Amount: req.params.Amount,
-        Farmer: req.params.Farmer
-    })
+    const data = {
+        FarmName: req.body.FarmName,
+        FarmDescription: req.body.FarmDescription,
+        FarmLocation: req.body.FarmLocation,
+        FarmCrop: req.body.FarmCrop,
+        FarmROI: req.body.FarmROI,
+        Duration: req.body.Duration,
+        Amount: req.body.Amount,
+        Farmer: req.body.Farmer
+    }
+
+    Farm.create(data)
     .then(Farm => {
         res.status(201).send(Farm)
-        console.log("Farm created with ID:", Farm.FarmId);
+        console.log("Farm created with ID:", Farm.id);
     })
     .catch(err => {
         console.log(err.message);
@@ -70,8 +72,30 @@ router.post('/', (req, res, next) => {
 });
 
 
-//TODO: Add logic select which farm attribute is to be updated
+//Delete Farm from the database
+router.delete('/', (req, res, next) => {
+    Farm.destroy({
+        where: {
+            id: req.body.id
+        }
+    })
+    .then(() => {
+        //Send deletion successful message to the client
+        console.log("Farm deleted with ID: ", +req.body.id);
+        res.status(200).json({
+            message: "Farm deleted",
+            id: req.body.id
+        });
+    })
+    .catch(err => {
+        console.log(err.message);
+        res.status(400).json(err.message);
+    });
+})
 
+
+//TODO: Add logic select which farm attribute is to be updated
+/*
 //Update farm information
 router.put('/', (res, req, next) => {
     Farm.update({
@@ -93,6 +117,8 @@ router.put('/', (res, req, next) => {
         })
     });
 });
+
+*/
 
 
 

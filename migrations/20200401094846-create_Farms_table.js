@@ -18,7 +18,7 @@ module.exports = {
         allowNull: false
     },
 
-    FarmLoaction: {
+    FarmLocation: {
         type: Sequelize.STRING(300),
         allowNull: false
     },

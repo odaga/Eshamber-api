@@ -26,6 +26,25 @@ router.get('/', (req, res, next) =>{
         })
 });
 
+//Retrieve investor based on id
+//Get all farms from the database
+router.get('/:InvestorId', (req, res, next) =>{
+    Investor.findOne({
+        where: {id: Investor.id}
+    })
+        .then( Investor => {
+            console.log(Investor)
+            res.status(200).send(Investor);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(400).send(JSON.stringify(err.message));
+        })
+});
+
+
+
+//Add investor to the database
 router.post('/', (req, res, next) => {
 
     const data = {
@@ -64,8 +83,15 @@ router.delete('/', (req, res, next) => {
     .then(() => {
         //Send deletion successful message to the client
         console.log("Investor with id: ", + req.body.id + "Deleted");
-        res.status().json()
+        res.status(200).json({
+            message: "Investor deleted",
+            id: req.body.id
+        });
     })
+    .catch(err => {
+        console.log(err.message);
+        res.status(400).json(err.message);
+    });
 });
 
 module.exports = router;
