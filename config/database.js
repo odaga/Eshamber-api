@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 require('dotenv').config();
+require('mysql2');
 
 //TODO apply environment variables to hide sensitive code like passwords
 
