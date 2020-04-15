@@ -3,11 +3,11 @@ const app = express();
 const router = express.Router();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const mysql = require('mysql2');
-
+const db = require('./config/database');
 
 
 //Send request to respective route files
+const indexRoute = require('./api/routes/index');
 const farmRoutes = require('./api/routes/farms');
 const userRoutes = require('./api/routes/users')
 
@@ -17,14 +17,22 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 //Routes which should handle requests
+app.use('/', indexRoute);
 app.use('/farms', farmRoutes);
-
 app.use('/users', userRoutes);
 
 
+//MYSQL database connection with Sequelize ORM
+db.authenticate()
+    .then(() => {
+        console.log('DB connection successful');
+    })
+    .catch(err => {
+        console.error('Unable to connect to the database:', err);
+    });
+    
 
 //Handling Cross Origin Resource Sharing (CORS) errors
-
 app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", 
@@ -54,12 +62,5 @@ app.use((error, req, res, next) => {
         }
     });
 });
-
-
-//Definition for the routes and callback functions
-router.get('/', (req, res, next) => {
-   res.status(200).send("Eshamber RESTful API")
-});
-
 
 module.exports = app;

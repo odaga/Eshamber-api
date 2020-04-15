@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql2');
+const Farm = require('../../models/Farm');
 require('dotenv').config();
 
 // Turn on JSON body parsing for REST services
@@ -9,120 +9,85 @@ router.use(express.json())
 router.use(express.urlencoded({ extended: true }));
 
 
-//Creating connection to the mysql database 
-
-const connection  = mysql.createConnection({
-    host: process.env.BD_HOST,
-    user: process.env.DB_USER_NAME,
-    password: process.env.DB_USER_PASSWORD,
-    database: process.env.DB_NAME
-});
-
-
-//=============== Second option for connecting database by creating a connection pool ======================//
-/*
-const pool = mysql.createPool({
-    host: process.env.BD_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_USER_PASSWORD,
-    database: process.env.DB_NAME
-   
-});
-
-function getConnection(){
-  return pool
-}
-*/
-
-
-connection.connect(err => {
-    if(err) {
-        console.log('error connecting to database:' +err.stack);
-        return;
-    }
-    console.log('Connected to DB as id ' + connection.threadId);
-});
-
-
-//Definition for the routes and callback functions
-router.get('/', (req, res, next) => {
-
-    const queryCommand = 'SELECT * FROM Farms'
-    connection.query(queryCommand, (err, rows, fields) => {
-        if(!err) {
-            console.log(rows);
-            res.status(200).send(rows);
-        }
-        else {
-            console.log(err.message);
-            throw err
-        }
-
-    });
-
-});
-
-//Route to fetch a specific farm based on its id
-router.get('/:farmId', (req, res, next) => {
-    
-    //SQL command
-    const queryCommand = 'SELECT * FROM Farms WHERE farmId = ?'
-    connection.query(queryCommand,[req.params.farmId], (err, rows, fields) => {
-         if(!err) {
-             res.status(200).send(rows);
-             if(rows.empty) {
-                res.status(404).send({
-                    message: "Farm not found"
-                });
-             }
-         }
-         else {
-            console.log(err.message);
-            throw err
-        }
-    });
-    
- 
-});
-
-
-//Route to add farm to the database
-router.post('/', (req, res, next) => {
-   
-    const FarmId = req.params.farmId;
-    const FarmName = req.params.FarmName;
-    const FarmDescription = req.params.FarmDescription;
-    const Amount = req.params.Amount;
-    const ROI = req.params.ROI;
-
-    res.status(201).json({
-        message: 'You just posted an farm with',
-        Farm: {
-            FarmId: req.params.FarmId,
-            FarmName: req.params.FarmName,
-            FarmDescription: req.params.FarmDescription,
-            Amount: req.params.Amount,
-            ROI: req.params.ROI
-        }
-    });
-});
-
-//Route to DELETE a specific farm based on its id
-router.delete('/:farmId', (req, res, next) => {
-
-    const queryCommand = 'DELETE FROM Farms WHERE farmId = ?'
-    connection.query(queryCommand,[req.params.farmId], (err, rows, fields) => {
-         if(!err) {
-             res.send('Farm has deleted successfully.');
-         }
-         else {
+//Get all farms from the database
+router.get('/', (req, res, next) =>{
+    Farm.findAll()
+        .then( Farm => {
+            console.log(Farm)
+            res.status(200).send(Farm);
+        })
+        .catch(err => {
             console.log(err);
-            throw err
-        }
-    });
- 
- });
+            res.status(400).send(err.message);
+        })
+});
 
+
+
+//Get all farms from the database
+router.get('/:FarmId', (req, res, next) =>{
+    Farm.findOne({
+        where: {id: Farm.id}
+    })
+        .then( Farm => {
+            console.log(Farm)
+            res.status(200).send(Farm);
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(400).send(JSON.stringify(err.message));
+        });
+    next(err);
+});
+
+
+//Create new farm in the database
+router.post('/', (req, res, next) => {
+    const data = {
+        FarmName: req.body.FarmName,
+        FarmDescription: req.body.FarmDescription,
+        FarmLocation: req.body.FarmLocation,
+        FarmCrop: req.body.FarmCrop,
+        FarmROI: req.body.FarmROI,
+        Duration: req.body.Duration,
+        Amount: req.body.Amount,
+        Farmer: req.body.Farmer
+    }
+
+    Farm.create(data)
+    .then(Farm => {
+        res.status(201).send(Farm)
+        console.log("Farm created with ID:", Farm.id);
+    })
+    .catch(err => {
+        console.log(err.message);
+        res.status(400).json({
+            message: err.message
+        });
+    });
+});
+
+
+//Delete Farm from the database
+router.delete('/', (req, res, next) => {
+    Farm.destroy({
+        where: {
+            id: req.body.id
+        }
+    })
+    .then(() => {
+        //Send deletion successful message to the client
+        console.log("Farm deleted with ID: ", +req.body.id);
+        res.status(200).json({
+            message: "Farm deleted",
+            id: req.body.id
+        });
+    })
+    .catch(err => {
+        console.log(err.message);
+        res.status(400).json(err.message);
+    });
+})
 
 
 
